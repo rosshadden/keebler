@@ -1,5 +1,5 @@
 [package]
-name = "keebler"
+name = "loki"
 version = "0.1.0"
 authors = ["Ross Hadden <rosshadden@gmail.com>"]
 edition = "2021"
