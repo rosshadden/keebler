@@ -140,7 +140,7 @@ async fn main(_spawner: Spawner) {
 	let usb_fut = usb.run();
 
 	// Set up the signal pin that will be used to trigger the keyboard.
-	let mut signal_pin = Input::new(p.PIN_16, Pull::None);
+	let mut signal_pin = Input::new(p.PIN_14, Pull::Up);
 
 	// Enable the schmitt trigger to slightly debounce.
 	signal_pin.set_schmitt(true);
@@ -155,7 +155,7 @@ async fn main(_spawner: Spawner) {
 			info!("HIGH DETECTED");
 			// Create a report with the A key pressed. (no shift modifier)
 			let report = KeyboardReport {
-				keycodes: [4, 0, 0, 0, 0, 0],
+				keycodes: [0, 0, 0, 0, 0, 0],
 				leds: 0,
 				modifier: 0,
 				reserved: 0,
@@ -165,10 +165,11 @@ async fn main(_spawner: Spawner) {
 				Ok(()) => {}
 				Err(e) => warn!("Failed to send report: {:?}", e),
 			};
+
 			signal_pin.wait_for_low().await;
 			info!("LOW DETECTED");
 			let report = KeyboardReport {
-				keycodes: [0, 0, 0, 0, 0, 0],
+				keycodes: [4, 0, 0, 0, 0, 0],
 				leds: 0,
 				modifier: 0,
 				reserved: 0,
