@@ -140,40 +140,33 @@ async fn main(_spawner: Spawner) {
 	let usb_fut = usb.run();
 
 	// Set up the signal pin that will be used to trigger the keyboard.
-	let mut signal_pin = Input::new(p.PIN_14, Pull::Up);
+	let mut key1 = Input::new(p.PIN_14, Pull::Up);
+	let mut key2 = Input::new(p.PIN_15, Pull::Up);
 
 	// Enable the schmitt trigger to slightly debounce.
-	signal_pin.set_schmitt(true);
+	key1.set_schmitt(true);
+	key2.set_schmitt(true);
 
 	let (reader, mut writer) = hid.split();
 
 	// Do stuff with the class!
 	let in_fut = async {
 		loop {
-			info!("Waiting for HIGH on pin 16");
-			signal_pin.wait_for_high().await;
-			info!("HIGH DETECTED");
-			// Create a report with the A key pressed. (no shift modifier)
-			let report = KeyboardReport {
+			let mut report = KeyboardReport {
 				keycodes: [0, 0, 0, 0, 0, 0],
 				leds: 0,
 				modifier: 0,
 				reserved: 0,
 			};
-			// Send the report.
-			match writer.write_serialize(&report).await {
-				Ok(()) => {}
-				Err(e) => warn!("Failed to send report: {:?}", e),
-			};
 
-			signal_pin.wait_for_low().await;
-			info!("LOW DETECTED");
-			let report = KeyboardReport {
-				keycodes: [4, 0, 0, 0, 0, 0],
-				leds: 0,
-				modifier: 0,
-				reserved: 0,
-			};
+			if key1.is_low() {
+				report.keycodes[0] = 4;
+			}
+
+			if key2.is_low() {
+				report.keycodes[0] = 5;
+			}
+
 			match writer.write_serialize(&report).await {
 				Ok(()) => {}
 				Err(e) => warn!("Failed to send report: {:?}", e),
