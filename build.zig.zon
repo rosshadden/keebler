@@ -3,12 +3,18 @@
     .version = "0.0.1",
     .dependencies = .{
         .microzig = .{
-            .url = "https://github.com/ZigEmbeddedGroup/microzig/archive/41805344004f525e32b423a2f50426357b1426dc.tar.gz",
-            .hash = "12207c5337e4ceee2c8d79ca75c634f8754bce3e1464a7ca9dd9187861d68d5c87c9",
+            // .url = "https://github.com/ZigEmbeddedGroup/microzig/archive/41805344004f525e32b423a2f50426357b1426dc.tar.gz",
+            // .hash = "12207c5337e4ceee2c8d79ca75c634f8754bce3e1464a7ca9dd9187861d68d5c87c9",
+            .url = "https://github.com/ZigEmbeddedGroup/microzig/archive/c6c9ec4516f57638e751141085c9d76120990312.tar.gz",
+            .hash = "1220af58bdaa721b8189f3a7adfda660517dd354463463388e96d69fe4ceccf80b92",
         },
         .rp2040 = .{
             .url = "https://github.com/ZigEmbeddedGroup/raspberrypi-rp2040/archive/545be476706a3fd29f6d8d14e09128b98a603c21.tar.gz",
             .hash = "1220ace0aa100a3dea16be76175a71b1f9067165289d6b2c8616ca128fefc451c400",
+        },
+        .kirei = .{
+            .url = "https://github.com/semickolon/kirei/archive/3207ec42ffda22066663c8112a0b63a29e5c03a7.tar.gz",
+            .hash = "122022b6b40b1c9c4e3ab974834897461c1a797db421e8e9be61217a188fb03e5e0c",
         },
     },
 }
