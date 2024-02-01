@@ -8,7 +8,8 @@ const rp2040 = microzig.hal;
 const time = rp2040.time;
 const gpio = rp2040.gpio;
 
-const led = gpio.num(25);
+const key1 = gpio.num(14);
+const key2 = gpio.num(15);
 const uart = rp2040.uart.num(0);
 
 pub const std_options = struct {
@@ -23,12 +24,16 @@ pub fn panic(message: []const u8, _: ?*std.builtin.StackTrace, _: ?usize) noretu
 }
 
 pub fn main() !void {
-    led.set_function(.sio);
-    led.set_direction(.out);
-    led.put(1);
+    key1.set_function(.sio);
+    key1.set_pull(.up);
+    key1.set_direction(.in);
+
+    key2.set_function(.sio);
+    key2.set_pull(.up);
+    key2.set_direction(.in);
 
     uart.apply(.{
-        .baud_rate = 115200,
+        .baud_rate = 115_200,
         .tx_pin = gpio.num(0),
         .rx_pin = gpio.num(1),
         .clock_config = rp2040.clock_config,
@@ -39,22 +44,29 @@ pub fn main() !void {
     try usb.init();
     interface.init();
 
-    var old: u64 = time.get_time_since_boot().to_us();
-    var new: u64 = 0;
-    var down = false;
+    var last_key1: bool = false;
+    var last_key2: bool = false;
 
     while (true) {
         try usb.process();
         interface.process();
 
-        new = time.get_time_since_boot().to_us();
-
-        if (new - old > 500000) {
-            old = new;
-            led.toggle();
-
-            down = !down;
-            interface.pushKeyEvent(1, down);
+        if (!last_key1 and key1.read() == 0) {
+            interface.pushKeyEvent(0, true);
+            last_key1 = true;
+        } else if (last_key1 and key1.read() == 1) {
+            interface.pushKeyEvent(0, false);
+            last_key1 = false;
         }
+
+        if (!last_key2 and key2.read() == 0) {
+            interface.pushKeyEvent(1, true);
+            last_key2 = true;
+        } else if (last_key2 and key2.read() == 1) {
+            interface.pushKeyEvent(1, false);
+            last_key2 = false;
+        }
+
+        time.sleep_ms(50);
     }
 }
